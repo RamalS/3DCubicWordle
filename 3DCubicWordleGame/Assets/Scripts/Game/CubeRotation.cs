@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class CubeRotation : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class CubeRotation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        IsRotating = Input.GetMouseButton(0);
+        IsRotating = Input.GetMouseButton(0) && EventSystem.current.currentSelectedGameObject == null;
 
         if (IsRotating)
         {

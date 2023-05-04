@@ -66,8 +66,8 @@ public class UIRayCast : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, Mathf.Infinity))
                 SetTargetAngle(GetHitFace(hit));
-            else
-                Debug.Log("No object found");
+            //else
+            //    Debug.Log("No object found");
         }
 
 
