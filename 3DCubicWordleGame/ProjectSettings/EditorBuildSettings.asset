@@ -11,4 +11,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Singleplayer.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/Settings.unity
+    guid: 81675f1f0847f514d918281a6de0d584
+  - enabled: 1
+    path: Assets/Scenes/About.unity
+    guid: e3465cfd48a4b6b4d8690ef8c0ce2748
   m_configObjects: {}

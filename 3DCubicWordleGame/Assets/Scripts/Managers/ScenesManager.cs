@@ -11,7 +11,8 @@ public class ScenesManager : MonoBehaviour
     {
         MainMenu,
         Singleplayer,
-
+        Settings,
+        About,
     }
 
     private void Awake()
