@@ -2,10 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIRayCast : MonoBehaviour
+public class CubeClosestFace : MonoBehaviour
 {
     [SerializeField] Camera _camera;
-    [SerializeField] GameObject _mainCube;
     [SerializeField] GameObject _referenceCube;
 
     Quaternion startRotation;
@@ -23,55 +22,48 @@ public class UIRayCast : MonoBehaviour
         Right
     }
 
+    void Update()
+    {
+        if (!Input.GetMouseButton(0))
+        {
+            RaycastHit hit;
+
+            var origin = _camera.transform.position;
+            var direction = transform.position - _camera.transform.position;
+
+            Debug.DrawRay(origin, direction, Color.red);
+
+            if (Physics.Raycast(origin, direction, out hit, Mathf.Infinity))
+            {
+                SetTargetAngle(GetHitFace(hit));
+            }
+
+            Rotate();
+        }   
+    }
+
     public CubeFace GetHitFace(RaycastHit hit)
     {
         CubeFace face = CubeFace.None;
 
         var ti = hit.triangleIndex;
 
-
-        if (ti == 4 || ti == 5)
+        if (ti == 4 || ti == 5)        // X 
             face = CubeFace.Front;
-        else if (ti == 0 || ti == 1)
+        else if (ti == 0 || ti == 1)   // X.
             face = CubeFace.Back;
-        else if (ti == 2 || ti == 3)
+        else if (ti == 2 || ti == 3)   // Z
             face = CubeFace.Top;
-        else if (ti == 6 || ti == 7)
+        else if (ti == 6 || ti == 7)   // Z.
             face = CubeFace.Bottom;
-        else if (ti == 8 || ti == 9)
+        else if (ti == 8 || ti == 9)   // Y.
             face = CubeFace.Left;
-        else if (ti == 10 || ti == 11)
+        else if (ti == 10 || ti == 11) // Y
             face = CubeFace.Right;
         else
             face = CubeFace.None;
 
         return face;
-    }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.white;
-        Gizmos.DrawWireSphere(transform.position, 5);
-    }
-
-    void Update()
-    {
-        if (Input.GetMouseButton(0))
-        {
-            RaycastHit hit;
-
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-
-            Debug.DrawRay(ray.origin, ray.direction);
-
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
-                SetTargetAngle(GetHitFace(hit));
-            //else
-            //    Debug.Log("No object found");
-        }
-
-
-        RotateMainCube();
     }
 
     private void SetTargetAngle(CubeFace face)
@@ -101,17 +93,17 @@ public class UIRayCast : MonoBehaviour
                 break;
         }
 
-        startRotation = _mainCube.transform.rotation;
+        startRotation = transform.rotation;
         rotationProgress = 0;
     }
 
-    private void RotateMainCube()
+    private void Rotate()
     {
         if (!CubeRotation.Instance.IsRotating && rotationProgress < 1 && rotationProgress >= 0)
         {
             rotationProgress += Time.deltaTime * 1;
 
-            _mainCube.transform.rotation = Quaternion.Lerp(startRotation, endRotation, rotationProgress);
+            transform.rotation = Quaternion.Lerp(startRotation, endRotation, rotationProgress);
             _referenceCube.transform.rotation = Quaternion.Lerp(startRotation, endRotation, rotationProgress);
         }
     }
