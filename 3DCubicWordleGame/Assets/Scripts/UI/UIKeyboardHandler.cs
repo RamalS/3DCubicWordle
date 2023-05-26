@@ -68,6 +68,9 @@ public class UIKeyboardHandler : MonoBehaviour
     private void InvokeButtonPress(KeyCode? key)
     {
         var buttonGameObject = GameObject.Find($"Button {key.ToString()}");
+
+        if (buttonGameObject == null) return;
+
         var button = buttonGameObject.GetComponent<Button>();
 
         button.Select();

@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StringExtensions
+public static class StringExtensions
 {
-    public static IEnumerable<int> GetAllIndexes(string str, string searchstring)
+    public static IEnumerable<int> GetAllIndexes(this string str, string searchstring)
     {
         int minIndex = str.IndexOf(searchstring);
         while (minIndex != -1)

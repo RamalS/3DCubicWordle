@@ -16,4 +16,18 @@ public static class ListExtensions
         }
         return matrix;
     }
+
+    public static bool IsOrderedSequence(this IList<int> list, int n)
+    {
+        if (list.Count != n) return false;
+
+        for (int i = 0; i < n; i++)
+        {
+            if (list[i] != i)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }

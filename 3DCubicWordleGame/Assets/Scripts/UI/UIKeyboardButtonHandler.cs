@@ -6,7 +6,14 @@ using UnityEngine.UI;
 
 public class UIKeyboardButtonHandler : MonoBehaviour
 {
+    public static UIKeyboardButtonHandler Instance;
+
     private MainCube mainCube;
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
@@ -37,7 +44,27 @@ public class UIKeyboardButtonHandler : MonoBehaviour
         {
             mainCube.WriteToCurrentFace(text);
 
-            UIKeyboardHandler.Input.text += text;
+            //UIKeyboardHandler.Input.text += text;
+        }
+    }
+
+    public void ChangeButtonColor(string letter, Color color)
+    {
+        var buttonGameObject = GameObject.Find($"Button {letter}");
+
+        if (buttonGameObject == null) return;
+
+        var button = buttonGameObject.GetComponent<Button>();
+
+        var image = button.GetComponent<Image>();
+        image.color = color;
+    }
+
+    public void ClearKeyboard()
+    {
+        for (char c = 'A'; c <= 'Z'; c++)
+        {
+            ChangeButtonColor(c.ToString(), Color.white);
         }
     }
 }

@@ -52,8 +52,12 @@ public class CubeClosestFace : MonoBehaviour
             {
                 var face = GetHitFace(hit);
                 SetTargetAngle(face);
-                CurrentFace = face;
-                mainCube.SetCurrentFace();
+
+                if (face != CurrentFace)
+                {
+                    CurrentFace = face;
+                    mainCube.SetCurrentFace();
+                }
             }
 
             Rotate();
@@ -117,6 +121,8 @@ public class CubeClosestFace : MonoBehaviour
 
     private void Rotate()
     {
+        if (CubeRotation.Instance == null) return;
+
         if (!CubeRotation.Instance.IsRotating && rotationProgress < 1 && rotationProgress >= 0)
         {
             rotationProgress += Time.deltaTime * 1;

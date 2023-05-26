@@ -7,7 +7,7 @@ using System.Linq;
 
 public class Face
 {
-    public static string TestWord = "DUMPY";
+    public static string TestWord = "ABCDD";
 
     // Properties
     public int Width = 5;
@@ -19,6 +19,13 @@ public class Face
     public List<GameObject> LetterGameObjects = new List<GameObject>();
     public int GuessIndex = 0;
     public int LetterIndex = 0;
+    public bool Done;
+    public bool Correct;
+    public Dictionary<string, Color> KeyboardColors = new Dictionary<string, Color>();
+
+    // Fields
+    private List<int> guessIndexes = new List<int>();
+    
 
     public Face(CubeClosestFace.CubeFace face, GameObject panelFace)
     {
@@ -33,8 +40,9 @@ public class Face
 
     public void WriteToWord(string letter)
     {
-        if (Word == null) { Word = ""; }
-        if (Word.Length >= 5) { return; }
+        if (Done) return;
+        if (Word == null) Word = "";
+        if (Word.Length >= 5) return;
 
         Word += letter;
         LetterIndex++;
@@ -42,30 +50,84 @@ public class Face
 
     public void RemoveFromWord()
     {
-        if (Word == null) { Word = ""; }
-        if (Word.Length <= 0) { return; }
+        if (Done) return;
+        if (Word == null) Word = "";
+        if (Word.Length <= 0) return;
 
         Word = Word.Remove(Word.Length - 1, 1);
         LetterIndex--;
     }
 
-    public void CheckWord()
+    public void CheckGuess()
     {
-        // Check Word
+        if (Done) return;
+
+        guessIndexes.Clear();
 
         for (int i = 0; i < Width; i++)
         {
             string letter = Word[i].ToString();
-            var realIndexes = StringExtensions.GetAllIndexes(TestWord, letter).ToList();
-            var guessIndexes = StringExtensions.GetAllIndexes(Word, letter).ToList();
+            var hiddenWordIndexes = StringExtensions.GetAllIndexes(TestWord, letter).ToList();
+            var userWordIndexes = StringExtensions.GetAllIndexes(Word, letter).ToList();
 
-            if (realIndexes.Count == 0) { continue; }
+            if (hiddenWordIndexes.Count == 0) 
+            {
+                ApplyColor(i, letter, Color.gray);
+                continue; 
+            }
 
+            if (hiddenWordIndexes.Count != userWordIndexes.Count)
+                ApplyColor(i, letter, Color.yellow);
+            else
+            {
+                if (Enumerable.SequenceEqual(hiddenWordIndexes, userWordIndexes))
+                {
+                    foreach (int index in userWordIndexes)
+                    {
+                        guessIndexes.Add(index);
+                        ApplyColor(i, letter, Color.green);
+                    }
+                }
+                else
+                {
+                    foreach (int index in userWordIndexes)
+                        ChangePanelColor(GuessIndex, i, Color.yellow);
+                }
+            }
+        }
+
+        var guessIndexesFiltered = guessIndexes.Distinct().ToList();
+        guessIndexesFiltered.Sort();
+        bool result = ListExtensions.IsOrderedSequence(guessIndexesFiltered, Width);
+
+        if (GuessIndex == 4) Done = true;
+
+        if (result)
+        {
+            Correct = true;
+            Done = true;
+        }
+    }
+
+    public void ApplyColor(int index, string letter, Color color)
+    {
+        ChangePanelColor(GuessIndex, index, color);
+        UIKeyboardButtonHandler.Instance.ChangeButtonColor(letter, color);
+
+        try
+        {
+            KeyboardColors.Add(letter, color);
+        }
+        catch (global::System.Exception)
+        {
+            return;
         }
     }
 
     public void NextRow()
     {
+        if (Done) return;
+
         Word = "";
         LetterIndex = 0;
         GuessIndex++;
@@ -73,9 +135,10 @@ public class Face
 
     public void ChangePanelColor(int row, int col, Color color)
     {
-        var image = FaceMatrix[row, col].GetComponent<Image>(); // GuessIndex, LetterIndex
+        var image = FaceMatrix[row, col].GetComponent<Image>(); // [GuessIndex, LetterIndex]
         image.color = color;
     }
+
 }
 
 
@@ -87,6 +150,7 @@ public class MainCube : MonoBehaviour
 
     // Fields
     private CubeClosestFace closestFace;
+    private UIKeyboardButtonHandler buttonHandler;
 
     private Face currentFace;
 
@@ -104,6 +168,7 @@ public class MainCube : MonoBehaviour
     void Start()
     {
         closestFace = CubeClosestFace.Instance;
+        buttonHandler = UIKeyboardButtonHandler.Instance;
 
         canvasFaceFront = GameObject.Find($"Canvas Face {CubeClosestFace.CubeFace.Front.ToString()}");
         panelFaceFront = canvasFaceFront.transform.GetChild(0).gameObject;
@@ -122,16 +187,35 @@ public class MainCube : MonoBehaviour
         {
             case CubeClosestFace.CubeFace.Front:
                 currentFace = faceFront;
+                ColorKeyboard();
                 break;
             default:
                 currentFace = null;
+                ColorKeyboard();
                 break;
+        }
+    }
+
+    public void ColorKeyboard()
+    {
+        if (currentFace == null)
+        {
+            buttonHandler.ClearKeyboard();
+            return;
+        }
+
+        buttonHandler.ClearKeyboard();
+
+        foreach (var item in currentFace.KeyboardColors)
+        {
+            buttonHandler.ChangeButtonColor(item.Key, item.Value);
         }
     }
 
     public void WriteToCurrentFace(string letter)
     {
-        if (currentFace == null) { return; }
+        if (currentFace == null) return;
+        if (currentFace.Done) return;
 
         DisplayLetter(letter);
         currentFace.WriteToWord(letter);
@@ -139,7 +223,8 @@ public class MainCube : MonoBehaviour
 
     public void RemoveFromCurrentFace()
     {
-        if (currentFace == null) { return; }
+        if (currentFace == null) return;
+        if (currentFace.Done) return;
 
         currentFace.RemoveFromWord();
         RemoveLetter();
@@ -147,7 +232,8 @@ public class MainCube : MonoBehaviour
 
     private void DisplayLetter(string letter)
     {
-        if (currentFace.LetterIndex >= 5) { return; }
+        if (currentFace.Done) return;
+        if (currentFace.LetterIndex >= currentFace.Width) return;
 
         GameObject currentPanel = currentFace.FaceMatrix[currentFace.GuessIndex, currentFace.LetterIndex];
         var text = currentPanel.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
@@ -156,7 +242,8 @@ public class MainCube : MonoBehaviour
 
     private void RemoveLetter()
     {
-        if (currentFace.LetterIndex < 0) { return; }
+        if (currentFace.Done) return;
+        if (currentFace.LetterIndex < 0) return;
 
         GameObject currentPanel = currentFace.FaceMatrix[currentFace.GuessIndex, currentFace.LetterIndex];
         var text = currentPanel.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
@@ -165,16 +252,24 @@ public class MainCube : MonoBehaviour
 
     public void GuessWord()
     {
-        if (currentFace.Word.Length != 5) { return; }
-        if (currentFace.GuessIndex >= 5) { return; }
+        if (currentFace.Done) return;
+        if (currentFace.Word.Length != currentFace.Width) return;
+        if (currentFace.GuessIndex >= currentFace.Width) return;
 
-        if (currentFace.GuessIndex == 4)
+        currentFace.CheckGuess();
+
+        if (currentFace.Done)
         {
             Debug.Log("Done");
+
+            if (currentFace.Correct)
+                Debug.Log("Correct");
+            else
+                Debug.Log("Incorrect");
+
             return;
         }
 
-        currentFace.CheckWord();
         currentFace.NextRow();
     }
 }
