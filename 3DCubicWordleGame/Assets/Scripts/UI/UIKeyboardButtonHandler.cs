@@ -57,6 +57,9 @@ public class UIKeyboardButtonHandler : MonoBehaviour
         var button = buttonGameObject.GetComponent<Button>();
 
         var image = button.GetComponent<Image>();
+
+        if (image.color == Color.green && color != Color.white) return;
+
         image.color = color;
     }
 

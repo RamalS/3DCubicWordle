@@ -1,9 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+
+public enum CubeFace
+{
+    None,
+    Front,
+    Back,
+    Top,
+    Bottom,
+    Left,
+    Right
+}
 
 public class Face
 {
@@ -12,7 +24,7 @@ public class Face
     // Properties
     public int Width = 5;
     public int Height = 5;
-    public CubeClosestFace.CubeFace CubeFace;
+    public CubeFace CubeFace;
     public GameObject PanelFace;
     public GameObject[,] FaceMatrix;
     public string Word = "";
@@ -27,9 +39,9 @@ public class Face
     private List<int> guessIndexes = new List<int>();
 
 
-    public Face(CubeClosestFace.CubeFace face, GameObject panelFace)
+    public Face(CubeFace face, GameObject panelFace)
     {
-        if (face == CubeClosestFace.CubeFace.None) { return; }
+        if (face == CubeFace.None) { return; }
 
         CubeFace = face;
         PanelFace = panelFace;
@@ -76,11 +88,24 @@ public class Face
                 continue;
             }
 
-            if (hiddenWordIndexes.Count != userWordIndexes.Count)
+            /*if (hiddenWordIndexes.Count != userWordIndexes.Count)
                 ApplyColor(i, letter, Color.yellow);
             else
-            {
-                if (Enumerable.SequenceEqual(hiddenWordIndexes, userWordIndexes))
+            {*/
+                for (int j = 0; j < userWordIndexes.Count; j++)
+                {
+                    if (hiddenWordIndexes.Contains(userWordIndexes[j]))
+                    {
+                        guessIndexes.Add(userWordIndexes[j]);
+                        ApplyColor(userWordIndexes[j], letter, Color.green);
+                    }
+                    else
+                    {
+                        ApplyColor(userWordIndexes[j], letter, Color.yellow);
+                    }
+                }
+
+                /*if (Enumerable.SequenceEqual(hiddenWordIndexes, userWordIndexes))
                 {
                     foreach (int index in userWordIndexes)
                     {
@@ -92,8 +117,8 @@ public class Face
                 {
                     foreach (int index in userWordIndexes)
                         ApplyColor(i, letter, Color.yellow);
-                }
-            }
+                }*/
+            //}
         }
 
         var guessIndexesFiltered = guessIndexes.Distinct().ToList();
@@ -116,7 +141,15 @@ public class Face
 
         try
         {
-            KeyboardColors.Add(letter, color);
+            if (KeyboardColors.ContainsKey(letter)) 
+            {
+                if (color == Color.green)
+                {
+                    KeyboardColors[letter] = color;
+                }
+            }
+            else
+                KeyboardColors.Add(letter, color);
         }
         catch (global::System.Exception)
         {
@@ -141,6 +174,20 @@ public class Face
 
 }
 
+public class UIFace
+{
+    public GameObject CanvasFace;
+    public GameObject PanelFace;
+    public Face Face;
+
+    public UIFace(GameObject canvasFace, GameObject panelFace, Face face)
+    {
+        CanvasFace = canvasFace;
+        PanelFace = panelFace;
+        Face = face;
+    }
+}
+
 
 public class MainCube : MonoBehaviour
 {
@@ -148,37 +195,33 @@ public class MainCube : MonoBehaviour
     // Static Properties
     public static MainCube Instance;
 
+    // Properties
+    public int FacesCorrect;
+    public int FacesDone;
+
+    // Serialize Fields
+    [SerializeField] TMP_Text ScoreText;
+
     // Fields
     private CubeClosestFace closestFace;
     private UIKeyboardButtonHandler buttonHandler;
 
+    private List<UIFace> uiFaces = new List<UIFace>();
     private Face currentFace;
 
-    private GameObject canvasFaceFront;
-    private GameObject panelFaceFront;
-    private Face faceFront;
 
-    private GameObject canvasFaceBack;
-    private GameObject panelFaceBack;
-    private Face faceBack;
+    private void InitFaces()
+    {
+        foreach (CubeFace cubeFace in Enum.GetValues(typeof(CubeFace)))
+        {
+            if (cubeFace == CubeFace.None) continue;
 
-    private GameObject canvasFaceTop;
-    private GameObject panelFaceTop;
-    private Face faceTop;
-
-    private GameObject canvasFaceBottom;
-    private GameObject panelFaceBottom;
-    private Face faceBottom;
-
-    private GameObject canvasFaceLeft;
-    private GameObject panelFaceLeft;
-    private Face faceLeft;
-
-    private GameObject canvasFaceRight;
-    private GameObject panelFaceRight;
-    private Face faceRight;
-
-
+            GameObject canvasFace = GameObject.Find($"Canvas Face {cubeFace.ToString()}");
+            GameObject panelFace = canvasFace.transform.GetChild(0).gameObject;
+            Face face = new Face(cubeFace, panelFace);
+            uiFaces.Add(new UIFace(canvasFace, panelFace, face));
+        }
+    }
 
     void Awake()
     {
@@ -190,70 +233,20 @@ public class MainCube : MonoBehaviour
         closestFace = CubeClosestFace.Instance;
         buttonHandler = UIKeyboardButtonHandler.Instance;
 
-        canvasFaceFront = GameObject.Find($"Canvas Face {CubeClosestFace.CubeFace.Front.ToString()}");
-        panelFaceFront = canvasFaceFront.transform.GetChild(0).gameObject;
-        faceFront = new Face(CubeClosestFace.CubeFace.Front, panelFaceFront);
-
-        canvasFaceBack = GameObject.Find($"Canvas Face {CubeClosestFace.CubeFace.Back.ToString()}");
-        panelFaceBack = canvasFaceBack.transform.GetChild(0).gameObject;
-        faceBack = new Face(CubeClosestFace.CubeFace.Back, panelFaceBack);
-
-        canvasFaceTop = GameObject.Find($"Canvas Face {CubeClosestFace.CubeFace.Top.ToString()}");
-        panelFaceTop = canvasFaceTop.transform.GetChild(0).gameObject;
-        faceTop = new Face(CubeClosestFace.CubeFace.Top, panelFaceTop);
-
-        canvasFaceBottom = GameObject.Find($"Canvas Face {CubeClosestFace.CubeFace.Bottom.ToString()}");
-        panelFaceBottom = canvasFaceBottom.transform.GetChild(0).gameObject;
-        faceBottom = new Face(CubeClosestFace.CubeFace.Bottom, panelFaceBottom);
-
-        canvasFaceLeft = GameObject.Find($"Canvas Face {CubeClosestFace.CubeFace.Left.ToString()}");
-        panelFaceLeft = canvasFaceLeft.transform.GetChild(0).gameObject;
-        faceLeft = new Face(CubeClosestFace.CubeFace.Left, panelFaceLeft);
-
-        canvasFaceRight = GameObject.Find($"Canvas Face {CubeClosestFace.CubeFace.Right.ToString()}");
-        panelFaceRight = canvasFaceRight.transform.GetChild(0).gameObject;
-        faceRight = new Face(CubeClosestFace.CubeFace.Right, panelFaceRight);
+        InitFaces();
 
         SetCurrentFace();
+
+        ScoreText.SetText($"Score: {FacesCorrect}");
     }
 
-    void Update()
-    {
-    }
 
     public void SetCurrentFace()
     {
-        switch (closestFace.CurrentFace)
-        {
-            case CubeClosestFace.CubeFace.Front:
-                currentFace = faceFront;
-                ColorKeyboard();
-                break;
-            case CubeClosestFace.CubeFace.Back:
-                currentFace = faceBack;
-                ColorKeyboard();
-                break;
-            case CubeClosestFace.CubeFace.Top:
-                currentFace = faceTop;
-                ColorKeyboard();
-                break;
-            case CubeClosestFace.CubeFace.Bottom:
-                currentFace = faceBottom;
-                ColorKeyboard();
-                break;
-            case CubeClosestFace.CubeFace.Left:
-                currentFace = faceLeft;
-                ColorKeyboard();
-                break;
-            case CubeClosestFace.CubeFace.Right:
-                currentFace = faceRight;
-                ColorKeyboard();
-                break;
-            default:
-                currentFace = null;
-                ColorKeyboard();
-                break;
-        }
+        if (closestFace.CurrentFace == CubeFace.None) return;
+
+        currentFace = uiFaces[(int)closestFace.CurrentFace - 1].Face;
+        ColorKeyboard();
     }
 
     public void ColorKeyboard()
@@ -312,7 +305,6 @@ public class MainCube : MonoBehaviour
 
     public void GuessWord()
     {
-        if (currentFace.Done) return;
         if (currentFace.Word.Length != currentFace.Width) return;
         if (currentFace.GuessIndex >= currentFace.Width) return;
 
@@ -321,12 +313,22 @@ public class MainCube : MonoBehaviour
         if (currentFace.Done)
         {
             Debug.Log("Done");
+            FacesDone++;
+
+            if (FacesDone >= 6) 
+            {
+                // GAME OVER
+                Debug.Log("Game Over");
+            }
 
             if (currentFace.Correct)
-                Debug.Log("Correct");
+            {
+                FacesCorrect++;
+                ScoreText.SetText($"Score: {FacesCorrect}");
+            }
             else
                 Debug.Log("Incorrect");
-
+                
             return;
         }
 

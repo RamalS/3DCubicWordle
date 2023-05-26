@@ -20,17 +20,6 @@ public class CubeClosestFace : MonoBehaviour
     private Quaternion endRotation;
     private float rotationProgress = -1;
 
-    public enum CubeFace
-    {
-        None,
-        Front,
-        Back,
-        Top,
-        Bottom,
-        Left,
-        Right
-    }
-
     void Awake()
     {
         Instance = this;
