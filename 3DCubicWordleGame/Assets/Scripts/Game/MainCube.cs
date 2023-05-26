@@ -25,7 +25,7 @@ public class Face
 
     // Fields
     private List<int> guessIndexes = new List<int>();
-    
+
 
     public Face(CubeClosestFace.CubeFace face, GameObject panelFace)
     {
@@ -70,10 +70,10 @@ public class Face
             var hiddenWordIndexes = StringExtensions.GetAllIndexes(TestWord, letter).ToList();
             var userWordIndexes = StringExtensions.GetAllIndexes(Word, letter).ToList();
 
-            if (hiddenWordIndexes.Count == 0) 
+            if (hiddenWordIndexes.Count == 0)
             {
                 ApplyColor(i, letter, Color.gray);
-                continue; 
+                continue;
             }
 
             if (hiddenWordIndexes.Count != userWordIndexes.Count)
@@ -91,7 +91,7 @@ public class Face
                 else
                 {
                     foreach (int index in userWordIndexes)
-                        ChangePanelColor(GuessIndex, i, Color.yellow);
+                        ApplyColor(i, letter, Color.yellow);
                 }
             }
         }
@@ -158,6 +158,26 @@ public class MainCube : MonoBehaviour
     private GameObject panelFaceFront;
     private Face faceFront;
 
+    private GameObject canvasFaceBack;
+    private GameObject panelFaceBack;
+    private Face faceBack;
+
+    private GameObject canvasFaceTop;
+    private GameObject panelFaceTop;
+    private Face faceTop;
+
+    private GameObject canvasFaceBottom;
+    private GameObject panelFaceBottom;
+    private Face faceBottom;
+
+    private GameObject canvasFaceLeft;
+    private GameObject panelFaceLeft;
+    private Face faceLeft;
+
+    private GameObject canvasFaceRight;
+    private GameObject panelFaceRight;
+    private Face faceRight;
+
 
 
     void Awake()
@@ -174,6 +194,26 @@ public class MainCube : MonoBehaviour
         panelFaceFront = canvasFaceFront.transform.GetChild(0).gameObject;
         faceFront = new Face(CubeClosestFace.CubeFace.Front, panelFaceFront);
 
+        canvasFaceBack = GameObject.Find($"Canvas Face {CubeClosestFace.CubeFace.Back.ToString()}");
+        panelFaceBack = canvasFaceBack.transform.GetChild(0).gameObject;
+        faceBack = new Face(CubeClosestFace.CubeFace.Back, panelFaceBack);
+
+        canvasFaceTop = GameObject.Find($"Canvas Face {CubeClosestFace.CubeFace.Top.ToString()}");
+        panelFaceTop = canvasFaceTop.transform.GetChild(0).gameObject;
+        faceTop = new Face(CubeClosestFace.CubeFace.Top, panelFaceTop);
+
+        canvasFaceBottom = GameObject.Find($"Canvas Face {CubeClosestFace.CubeFace.Bottom.ToString()}");
+        panelFaceBottom = canvasFaceBottom.transform.GetChild(0).gameObject;
+        faceBottom = new Face(CubeClosestFace.CubeFace.Bottom, panelFaceBottom);
+
+        canvasFaceLeft = GameObject.Find($"Canvas Face {CubeClosestFace.CubeFace.Left.ToString()}");
+        panelFaceLeft = canvasFaceLeft.transform.GetChild(0).gameObject;
+        faceLeft = new Face(CubeClosestFace.CubeFace.Left, panelFaceLeft);
+
+        canvasFaceRight = GameObject.Find($"Canvas Face {CubeClosestFace.CubeFace.Right.ToString()}");
+        panelFaceRight = canvasFaceRight.transform.GetChild(0).gameObject;
+        faceRight = new Face(CubeClosestFace.CubeFace.Right, panelFaceRight);
+
         SetCurrentFace();
     }
 
@@ -187,6 +227,26 @@ public class MainCube : MonoBehaviour
         {
             case CubeClosestFace.CubeFace.Front:
                 currentFace = faceFront;
+                ColorKeyboard();
+                break;
+            case CubeClosestFace.CubeFace.Back:
+                currentFace = faceBack;
+                ColorKeyboard();
+                break;
+            case CubeClosestFace.CubeFace.Top:
+                currentFace = faceTop;
+                ColorKeyboard();
+                break;
+            case CubeClosestFace.CubeFace.Bottom:
+                currentFace = faceBottom;
+                ColorKeyboard();
+                break;
+            case CubeClosestFace.CubeFace.Left:
+                currentFace = faceLeft;
+                ColorKeyboard();
+                break;
+            case CubeClosestFace.CubeFace.Right:
+                currentFace = faceRight;
                 ColorKeyboard();
                 break;
             default:

@@ -34,6 +34,10 @@ public class CubeClosestFace : MonoBehaviour
     void Awake()
     {
         Instance = this;
+    }
+
+    void Start()
+    {
         mainCube = MainCube.Instance;
     }
 
