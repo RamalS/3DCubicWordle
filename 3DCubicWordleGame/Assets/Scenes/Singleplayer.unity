@@ -5042,7 +5042,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: 'Score: 0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -17749,7 +17749,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8776669186827915998, guid: 909578760e927844abb4d6b7966fc794, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.022
+      value: -0.005
       objectReference: {fileID: 0}
     - target: {fileID: 8776669186827915998, guid: 909578760e927844abb4d6b7966fc794, type: 3}
       propertyPath: m_LocalRotation.w
@@ -17773,7 +17773,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8776669186827915998, guid: 909578760e927844abb4d6b7966fc794, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1.064
+      value: 1.052
       objectReference: {fileID: 0}
     - target: {fileID: 8776669186827915998, guid: 909578760e927844abb4d6b7966fc794, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

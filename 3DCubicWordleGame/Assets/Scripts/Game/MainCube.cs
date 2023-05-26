@@ -88,37 +88,18 @@ public class Face
                 continue;
             }
 
-            /*if (hiddenWordIndexes.Count != userWordIndexes.Count)
-                ApplyColor(i, letter, Color.yellow);
-            else
-            {*/
-                for (int j = 0; j < userWordIndexes.Count; j++)
+            for (int j = 0; j < userWordIndexes.Count; j++)
+            {
+                if (hiddenWordIndexes.Contains(userWordIndexes[j]))
                 {
-                    if (hiddenWordIndexes.Contains(userWordIndexes[j]))
-                    {
-                        guessIndexes.Add(userWordIndexes[j]);
-                        ApplyColor(userWordIndexes[j], letter, Color.green);
-                    }
-                    else
-                    {
-                        ApplyColor(userWordIndexes[j], letter, Color.yellow);
-                    }
-                }
-
-                /*if (Enumerable.SequenceEqual(hiddenWordIndexes, userWordIndexes))
-                {
-                    foreach (int index in userWordIndexes)
-                    {
-                        guessIndexes.Add(index);
-                        ApplyColor(i, letter, Color.green);
-                    }
+                    guessIndexes.Add(userWordIndexes[j]);
+                    ApplyColor(userWordIndexes[j], letter, Color.green);
                 }
                 else
                 {
-                    foreach (int index in userWordIndexes)
-                        ApplyColor(i, letter, Color.yellow);
-                }*/
-            //}
+                    ApplyColor(userWordIndexes[j], letter, Color.yellow);
+                }
+            }
         }
 
         var guessIndexesFiltered = guessIndexes.Distinct().ToList();
@@ -141,7 +122,7 @@ public class Face
 
         try
         {
-            if (KeyboardColors.ContainsKey(letter)) 
+            if (KeyboardColors.ContainsKey(letter))
             {
                 if (color == Color.green)
                 {
@@ -315,7 +296,7 @@ public class MainCube : MonoBehaviour
             Debug.Log("Done");
             FacesDone++;
 
-            if (FacesDone >= 6) 
+            if (FacesDone >= 6)
             {
                 // GAME OVER
                 Debug.Log("Game Over");
@@ -328,7 +309,7 @@ public class MainCube : MonoBehaviour
             }
             else
                 Debug.Log("Incorrect");
-                
+
             return;
         }
 
