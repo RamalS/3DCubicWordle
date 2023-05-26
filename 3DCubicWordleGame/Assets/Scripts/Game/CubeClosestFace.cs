@@ -4,12 +4,21 @@ using UnityEngine;
 
 public class CubeClosestFace : MonoBehaviour
 {
-    [SerializeField] Camera _camera;
-    [SerializeField] GameObject _referenceCube;
+    // Static Properties
+    public static CubeClosestFace Instance;
 
-    Quaternion startRotation;
-    Quaternion endRotation;
-    float rotationProgress = -1;
+    // Properties
+    public CubeFace CurrentFace = CubeFace.None;
+
+    // Serialize Fields
+    [SerializeField] Camera Camera;
+    [SerializeField] GameObject ReferenceCube;
+
+    // Fields
+    private MainCube mainCube;
+    private Quaternion startRotation;
+    private Quaternion endRotation;
+    private float rotationProgress = -1;
 
     public enum CubeFace
     {
@@ -22,20 +31,29 @@ public class CubeClosestFace : MonoBehaviour
         Right
     }
 
+    void Awake()
+    {
+        Instance = this;
+        mainCube = MainCube.Instance;
+    }
+
     void Update()
     {
         if (!Input.GetMouseButton(0))
         {
             RaycastHit hit;
 
-            var origin = _camera.transform.position;
-            var direction = transform.position - _camera.transform.position;
+            var origin = Camera.transform.position;
+            var direction = transform.position - Camera.transform.position;
 
             Debug.DrawRay(origin, direction, Color.red);
 
             if (Physics.Raycast(origin, direction, out hit, Mathf.Infinity))
             {
-                SetTargetAngle(GetHitFace(hit));
+                var face = GetHitFace(hit);
+                SetTargetAngle(face);
+                CurrentFace = face;
+                mainCube.SetCurrentFace();
             }
 
             Rotate();
@@ -104,7 +122,8 @@ public class CubeClosestFace : MonoBehaviour
             rotationProgress += Time.deltaTime * 1;
 
             transform.rotation = Quaternion.Lerp(startRotation, endRotation, rotationProgress);
-            _referenceCube.transform.rotation = Quaternion.Lerp(startRotation, endRotation, rotationProgress);
+            ReferenceCube.transform.rotation = Quaternion.Lerp(startRotation, endRotation, rotationProgress);
         }
     }
+
 }

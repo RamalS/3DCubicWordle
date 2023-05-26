@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class ScenesManager : MonoBehaviour
 {
+    // Static Properties
     public static ScenesManager Instance;
 
     public enum Scene 
@@ -15,7 +16,7 @@ public class ScenesManager : MonoBehaviour
         About,
     }
 
-    private void Awake()
+    void Awake()
     {
         Instance = this;
     }

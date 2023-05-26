@@ -6,6 +6,13 @@ using UnityEngine.UI;
 
 public class UIKeyboardButtonHandler : MonoBehaviour
 {
+    private MainCube mainCube;
+
+    void Start()
+    {
+        mainCube = MainCube.Instance;
+    }
+
     public void ButtonPress()
     {
         var button = EventSystem.current.currentSelectedGameObject;
@@ -15,10 +22,12 @@ public class UIKeyboardButtonHandler : MonoBehaviour
 
         if (button.name == "Button Return")
         {
-            Debug.Log($"Word: {UIKeyboardHandler.Input.text}");
+            mainCube.GuessWord();
         }
         else if (button.name == "Button Backspace")
         {
+            mainCube.RemoveFromCurrentFace();
+
             if (UIKeyboardHandler.Input.text.Length > 0)
             {
                 UIKeyboardHandler.Input.text = UIKeyboardHandler.Input.text.Remove(UIKeyboardHandler.Input.text.Length - 1, 1);
@@ -26,13 +35,9 @@ public class UIKeyboardButtonHandler : MonoBehaviour
         }
         else
         {
+            mainCube.WriteToCurrentFace(text);
+
             UIKeyboardHandler.Input.text += text;
         }
-
-        
-
-        //Debug.Log($"Button click invoked {text}");
-
-        //UIKeyboardHandler.Input.text += text;
     }
 }

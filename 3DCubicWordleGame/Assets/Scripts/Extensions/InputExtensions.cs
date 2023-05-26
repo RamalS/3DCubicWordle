@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class InputHelper : MonoBehaviour
+public class InputExtensions
 {
     private static readonly KeyCode[] keyCodes = System.Enum.GetValues(typeof(KeyCode))
                                                  .Cast<KeyCode>()

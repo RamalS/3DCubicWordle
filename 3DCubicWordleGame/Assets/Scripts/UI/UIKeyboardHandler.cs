@@ -25,7 +25,7 @@ public class UIKeyboardHandler : MonoBehaviour
     {
         Reset();
 
-        var key = InputHelper.GetCurrentKeyDown();
+        var key = InputExtensions.GetCurrentKeyDown();
 
         if (Time.time >= nextTime)
         {
