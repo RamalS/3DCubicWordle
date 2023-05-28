@@ -5,17 +5,17 @@ using UnityEngine.UI;
 public class UIAbout : MonoBehaviour
 {
 
-    [SerializeField] Button _buttonBackAbout;
+    [SerializeField] Button ButtonBackAbout;
 
     // Start is called before the first frame update
     void Start()
     {
-        _buttonBackAbout.onClick.AddListener(BackToMainMenuAbout);
+        ButtonBackAbout.onClick.AddListener(BackToMainMenuAbout);
     }
 
     private void BackToMainMenuAbout()
     {
-        ScenesManager.Instance.LoadScene(ScenesManager.Scene.MainMenu);
+        ScenesManager.Instance.LoadScene(Scene.MainMenu);
     }
 
 }

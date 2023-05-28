@@ -5,30 +5,30 @@ using UnityEngine.UI;
 
 public class UIMainMenu : MonoBehaviour
 {
-    [SerializeField] Button _buttonSingleplayer, _buttonExitGame, _buttonSettings, _buttonAbout;
+    [SerializeField] Button ButtonSingleplayer, ButtonExitGame, ButtonSettings, ButtonAbout;
 
     // Start is called before the first frame update
     void Start()
     {
-        _buttonSingleplayer.onClick.AddListener(StartSinglePlayer);
-        _buttonSettings.onClick.AddListener(Settings);
-        _buttonAbout.onClick.AddListener(About);
-        _buttonExitGame.onClick.AddListener(ExitGame);
+        ButtonSingleplayer.onClick.AddListener(StartSinglePlayer);
+        ButtonSettings.onClick.AddListener(Settings);
+        ButtonAbout.onClick.AddListener(About);
+        ButtonExitGame.onClick.AddListener(ExitGame);
     }
 
     private void StartSinglePlayer()
     {
-        ScenesManager.Instance.LoadScene(ScenesManager.Scene.Singleplayer);
+        ScenesManager.Instance.LoadScene(Scene.Singleplayer);
     }
 
     private void Settings()
     {
-        ScenesManager.Instance.LoadScene(ScenesManager.Scene.Settings);
+        ScenesManager.Instance.LoadScene(Scene.Settings);
     }
 
     private void About()
     {
-        ScenesManager.Instance.LoadScene(ScenesManager.Scene.About);
+        ScenesManager.Instance.LoadScene(Scene.About);
     }
 
     private void ExitGame()

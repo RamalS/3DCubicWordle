@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+public enum Scene
+{
+    MainMenu,
+    Singleplayer,
+    Settings,
+    About,
+}
+
 public class ScenesManager : MonoBehaviour
 {
     // Static Properties
     public static ScenesManager Instance;
 
-    public enum Scene 
-    {
-        MainMenu,
-        Singleplayer,
-        Settings,
-        About,
-    }
+    
 
     void Awake()
     {

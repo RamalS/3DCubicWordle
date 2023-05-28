@@ -5,16 +5,16 @@ using UnityEngine.UI;
 
 public class UIGameMenu : MonoBehaviour
 {
-    [SerializeField] Button _buttonMainMenu;
+    [SerializeField] Button ButtonMainMenu;
 
     // Start is called before the first frame update
     void Start()
     {
-        _buttonMainMenu.onClick.AddListener(LoadMainMenu);
+        ButtonMainMenu.onClick.AddListener(LoadMainMenu);
     }
 
     private void LoadMainMenu()
     {
-        ScenesManager.Instance.LoadScene(ScenesManager.Scene.MainMenu);
+        ScenesManager.Instance.LoadScene(Scene.MainMenu);
     }
 }

@@ -19,7 +19,7 @@ public enum CubeFace
 
 public class Face
 {
-    public static string TestWord = "ABCDD";
+    public string HiddenWord = "ABCDD";
 
     // Properties
     public int Width = 5;
@@ -79,7 +79,7 @@ public class Face
         for (int i = 0; i < Width; i++)
         {
             string letter = Word[i].ToString();
-            var hiddenWordIndexes = StringExtensions.GetAllIndexes(TestWord, letter).ToList();
+            var hiddenWordIndexes = StringExtensions.GetAllIndexes(HiddenWord, letter).ToList();
             var userWordIndexes = StringExtensions.GetAllIndexes(Word, letter).ToList();
 
             if (hiddenWordIndexes.Count == 0)
@@ -181,12 +181,13 @@ public class MainCube : MonoBehaviour
     public int FacesDone;
 
     // Serialize Fields
-    [SerializeField] TMP_Text ScoreText;
+    [SerializeField] TMP_Text TextScore;
+    [SerializeField] TextAsset WordleWords;
 
     // Fields
     private CubeClosestFace closestFace;
     private UIKeyboardButtonHandler buttonHandler;
-
+    private UIManager uiManager;
     private List<UIFace> uiFaces = new List<UIFace>();
     private Face currentFace;
 
@@ -213,12 +214,24 @@ public class MainCube : MonoBehaviour
     {
         closestFace = CubeClosestFace.Instance;
         buttonHandler = UIKeyboardButtonHandler.Instance;
+        uiManager = UIManager.Instance;
 
         InitFaces();
 
         SetCurrentFace();
 
-        ScoreText.SetText($"Score: {FacesCorrect}");
+        TextScore.SetText($"Score: {FacesCorrect}");
+
+        string[] words = WordleWords.text.Split(
+            new string[] { "\r\n", "\r", "\n" },
+            StringSplitOptions.None
+        );
+
+
+
+
+
+        int f = 0;
     }
 
 
@@ -300,12 +313,14 @@ public class MainCube : MonoBehaviour
             {
                 // GAME OVER
                 Debug.Log("Game Over");
+
+                uiManager.ActivateGameOver(FacesCorrect);
             }
 
             if (currentFace.Correct)
             {
                 FacesCorrect++;
-                ScoreText.SetText($"Score: {FacesCorrect}");
+                TextScore.SetText($"Score: {FacesCorrect}");
             }
             else
                 Debug.Log("Incorrect");

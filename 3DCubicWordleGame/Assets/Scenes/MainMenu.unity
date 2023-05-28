@@ -1741,10 +1741,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778a8c5e117470e428adef48e149fc22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buttonSingleplayer: {fileID: 870040781}
-  _buttonExitGame: {fileID: 226827033}
-  _buttonSettings: {fileID: 1678554642}
-  _buttonAbout: {fileID: 986135879}
+  ButtonSingleplayer: {fileID: 870040781}
+  ButtonExitGame: {fileID: 226827033}
+  ButtonSettings: {fileID: 1678554642}
+  ButtonAbout: {fileID: 986135879}
 --- !u!1 &1834370227
 GameObject:
   m_ObjectHideFlags: 0
