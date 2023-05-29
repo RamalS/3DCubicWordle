@@ -18,6 +18,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject PanelHints;
 
     bool isGameOver = false;
+    bool shouldShowHints = false;
 
     void Awake()
     {
@@ -44,6 +45,14 @@ public class UIManager : MonoBehaviour
             isGameOver = true;
             PanelGameOver.SetActive(true);
         }
+
+
+        if (Input.GetKeyDown(KeyCode.Alpha1) && !shouldShowHints)
+        {
+            shouldShowHints = true;
+            PanelHints.SetActive(true);
+        }
+        
     }
 
     void ButtonPressRestart()

@@ -19,7 +19,7 @@ public enum CubeFace
 
 public class Face
 {
-    public string HiddenWord = "ABCDD";
+    public string HiddenWord;
 
     // Properties
     public int Width = 5;
@@ -39,15 +39,19 @@ public class Face
     private List<int> guessIndexes = new List<int>();
 
 
-    public Face(CubeFace face, GameObject panelFace)
+    public Face(CubeFace face, GameObject panelFace, string word)
     {
-        if (face == CubeFace.None) { return; }
+        if (face == CubeFace.None) return; 
+
+        HiddenWord = word.ToUpper();
 
         CubeFace = face;
         PanelFace = panelFace;
 
         var childrenFace = GameObjectExtensions.GetChildren(PanelFace);
         FaceMatrix = ListExtensions.ToMatrix<GameObject>(childrenFace, Width, Height);
+
+        
     }
 
     public void WriteToWord(string letter)
@@ -183,6 +187,14 @@ public class MainCube : MonoBehaviour
     // Serialize Fields
     [SerializeField] TMP_Text TextScore;
     [SerializeField] TextAsset WordleWords;
+    [SerializeField] TMP_Text HintFront;
+    [SerializeField] TMP_Text HintBack;
+    [SerializeField] TMP_Text HintTop;
+    [SerializeField] TMP_Text HintBottom;
+    [SerializeField] TMP_Text HintLeft;
+    [SerializeField] TMP_Text HintRight;
+    
+
 
     // Fields
     private CubeClosestFace closestFace;
@@ -190,6 +202,9 @@ public class MainCube : MonoBehaviour
     private UIManager uiManager;
     private List<UIFace> uiFaces = new List<UIFace>();
     private Face currentFace;
+    private Dictionary<char, List<string>> startsWith = new Dictionary<char, List<string>>();
+    private Dictionary<char, List<string>> endsWith = new Dictionary<char, List<string>>();
+    private List<string> faceWords;
 
 
     private void InitFaces()
@@ -200,9 +215,100 @@ public class MainCube : MonoBehaviour
 
             GameObject canvasFace = GameObject.Find($"Canvas Face {cubeFace.ToString()}");
             GameObject panelFace = canvasFace.transform.GetChild(0).gameObject;
-            Face face = new Face(cubeFace, panelFace);
+            Face face = new Face(cubeFace, panelFace, faceWords[(int)cubeFace - 1]);
             uiFaces.Add(new UIFace(canvasFace, panelFace, face));
         }
+    }
+
+    private List<string> StartsWith(List<string> words, char letter)
+    {
+        List<string> wordsStartingWith = new List<string>();
+
+        foreach (var word in words)
+        {
+            if (word.Length <= 0) continue;
+
+            if (word.First() == letter)
+                wordsStartingWith.Add(word); 
+        }
+
+        return wordsStartingWith;
+    }
+
+    private List<string> EndsWith(List<string> words, char letter)
+    {
+        List<string> wordsEndingWith = new List<string>();
+
+        foreach (var word in words)
+        {
+            if (word.Length <= 0) continue;
+
+            if (word.Last() == letter)
+                wordsEndingWith.Add(word);
+        }
+
+        return wordsEndingWith;
+    }
+
+    private List<string> StartsWithEndsWith(List<string> words, char startLetter, char endLetter) 
+    {
+        List<string> wordsStartingWith = StartsWith(words, startLetter);
+        List<string> wordsStartingEndingWith = EndsWith(wordsStartingWith, endLetter);
+        return wordsStartingEndingWith;
+    }
+
+    private void InitWords()
+    {
+        List<string> words = WordleWords.text.Split(
+            new string[] { "\r\n", "\r", "\n" },
+            StringSplitOptions.None
+        ).ToList();
+        words = words.Where(s => !string.IsNullOrEmpty(s)).ToList();
+
+        while (PickWords(words) != true)
+        {
+
+        }
+
+    }
+
+    private bool PickWords(List<string> words)
+    {
+        var random = new System.Random();
+
+        string frontWord = words[random.Next(words.Count - 1)];
+
+        List<string> wordsStartingWithFront = StartsWith(words, frontWord.Last());
+        if (wordsStartingWithFront.Count == 0) return false;
+        string rightWord = wordsStartingWithFront[random.Next(wordsStartingWithFront.Count - 1)];
+
+        List<string> wordsStartingWithRight = StartsWith(words, rightWord.Last());
+        if (wordsStartingWithRight.Count == 0) return false;
+        string backWord = wordsStartingWithRight[random.Next(wordsStartingWithRight.Count - 1)];
+
+
+        List<string> wordsStartingWithBackEndingWithFront = StartsWithEndsWith(words, backWord.Last(), frontWord.First());
+        if (wordsStartingWithBackEndingWithFront.Count == 0) return false;
+        string leftWord = wordsStartingWithBackEndingWithFront[random.Next(wordsStartingWithBackEndingWithFront.Count - 1)];
+
+        List<string> wordsStartingWithBackEndingWithBack = StartsWithEndsWith(words, backWord.Last(), backWord.First());
+        if (wordsStartingWithBackEndingWithBack.Count == 0) return false;
+        string topWord = wordsStartingWithBackEndingWithBack[random.Next(wordsStartingWithBackEndingWithBack.Count - 1)];
+
+        List<string> wordsStartingWithFrontEndingWithFront = StartsWithEndsWith(words, frontWord.First(), frontWord.Last());
+        if (wordsStartingWithFrontEndingWithFront.Count == 0) return false;
+        string bottomWord = wordsStartingWithFrontEndingWithFront[random.Next(wordsStartingWithFrontEndingWithFront.Count - 1)];
+
+        faceWords = new List<string> { frontWord, backWord, topWord, bottomWord, leftWord, rightWord };
+
+        HintFront.SetText($"Front: {frontWord}");
+        HintBack.SetText($"Back: {backWord}");
+        HintTop.SetText($"Top: {topWord}");
+        HintBottom.SetText($"Bottom: {bottomWord}");
+        HintLeft.SetText($"Left: {leftWord}");
+        HintRight.SetText($"Right: {rightWord}");
+
+        return true;
     }
 
     void Awake()
@@ -216,22 +322,14 @@ public class MainCube : MonoBehaviour
         buttonHandler = UIKeyboardButtonHandler.Instance;
         uiManager = UIManager.Instance;
 
+        InitWords();
+
         InitFaces();
 
         SetCurrentFace();
 
         TextScore.SetText($"Score: {FacesCorrect}");
 
-        string[] words = WordleWords.text.Split(
-            new string[] { "\r\n", "\r", "\n" },
-            StringSplitOptions.None
-        );
-
-
-
-
-
-        int f = 0;
     }
 
 
@@ -309,13 +407,7 @@ public class MainCube : MonoBehaviour
             Debug.Log("Done");
             FacesDone++;
 
-            if (FacesDone >= 6)
-            {
-                // GAME OVER
-                Debug.Log("Game Over");
-
-                uiManager.ActivateGameOver(FacesCorrect);
-            }
+            
 
             if (currentFace.Correct)
             {
@@ -324,6 +416,14 @@ public class MainCube : MonoBehaviour
             }
             else
                 Debug.Log("Incorrect");
+
+            if (FacesDone >= 6)
+            {
+                // GAME OVER
+                Debug.Log("Game Over");
+
+                uiManager.ActivateGameOver(FacesCorrect);
+            }
 
             return;
         }
