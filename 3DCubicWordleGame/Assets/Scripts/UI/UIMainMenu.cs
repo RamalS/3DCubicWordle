@@ -33,7 +33,7 @@ public class UIMainMenu : MonoBehaviour
 
     private void ExitGame()
     {
-        UnityEditor.EditorApplication.isPlaying = false;
-        //Application.Quit()
+        //UnityEditor.EditorApplication.isPlaying = false;
+        Application.Quit();
     }
 }

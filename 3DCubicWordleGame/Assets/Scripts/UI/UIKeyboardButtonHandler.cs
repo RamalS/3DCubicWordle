@@ -29,7 +29,8 @@ public class UIKeyboardButtonHandler : MonoBehaviour
 
         if (button.name == "Button Return")
         {
-            mainCube.GuessWord();
+            if (!mainCube.currentFace.Done)
+                mainCube.GuessWord();
         }
         else if (button.name == "Button Backspace")
         {

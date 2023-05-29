@@ -183,6 +183,7 @@ public class MainCube : MonoBehaviour
     // Properties
     public int FacesCorrect;
     public int FacesDone;
+    public Face currentFace;
 
     // Serialize Fields
     [SerializeField] TMP_Text TextScore;
@@ -201,7 +202,7 @@ public class MainCube : MonoBehaviour
     private UIKeyboardButtonHandler buttonHandler;
     private UIManager uiManager;
     private List<UIFace> uiFaces = new List<UIFace>();
-    private Face currentFace;
+    
     private Dictionary<char, List<string>> startsWith = new Dictionary<char, List<string>>();
     private Dictionary<char, List<string>> endsWith = new Dictionary<char, List<string>>();
     private List<string> faceWords;
