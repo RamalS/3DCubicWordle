@@ -206,6 +206,7 @@ public class MainCube : MonoBehaviour
     private Dictionary<char, List<string>> startsWith = new Dictionary<char, List<string>>();
     private Dictionary<char, List<string>> endsWith = new Dictionary<char, List<string>>();
     private List<string> faceWords;
+    private List<string> validWords;
 
 
     private void InitFaces()
@@ -265,6 +266,7 @@ public class MainCube : MonoBehaviour
             StringSplitOptions.None
         ).ToList();
         words = words.Where(s => !string.IsNullOrEmpty(s)).ToList();
+        validWords = words;
 
         while (PickWords(words) != true)
         {
@@ -400,6 +402,13 @@ public class MainCube : MonoBehaviour
     {
         if (currentFace.Word.Length != currentFace.Width) return;
         if (currentFace.GuessIndex >= currentFace.Width) return;
+        bool found = false;
+        foreach (var word in validWords)
+        {
+            if (currentFace.Word.ToLower() == word)
+            { found = true; break; }
+        }
+        if (!found) return;
 
         currentFace.CheckGuess();
 

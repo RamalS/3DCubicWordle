@@ -52,7 +52,12 @@ public class UIManager : MonoBehaviour
             shouldShowHints = true;
             PanelHints.SetActive(true);
         }
-        
+        else if (Input.GetKeyDown(KeyCode.Alpha1) && shouldShowHints)
+        {
+            shouldShowHints = false;
+            PanelHints.SetActive(false);
+        }
+
     }
 
     void ButtonPressRestart()
